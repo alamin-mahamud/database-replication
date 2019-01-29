@@ -1,0 +1,50 @@
+version: '3'
+services:
+    #MySQL Service
+
+    master:
+        image: mysql:5.7.22
+        container_name: master
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_DATABASE: test
+            MYSQL_ROOT_PASSWORD: 123456
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - app-network
+        volumes:
+            - dbdata:/var/lib/mysql
+            #- ./master/my.cnf:/etc/mysql/my.cnf
+
+    slave:
+        image: mysql:5.7.22
+        container_name: slave
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: 234567
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - app-network
+        volumes:
+            - dbdata:/var/lib/mysql
+            # - ./slave/my.cnf:/etc/mysql/my.cnf
+
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+
+#Docker Volumes
+volumes:
+  dbdata:
+    driver: local
